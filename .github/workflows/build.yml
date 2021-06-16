@@ -17,49 +17,52 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Clone
-        run: git clone https://github.com/termux/termux-packages.git
+        run: |
+        git clone https://github.com/termux/termux-packages.git
+        git checkout  ab2a3b70f0
 
       - name: Add proot-portable package
         run: |
+          sudo apt install tree -y
           mkdir termux-packages/packages/proot-portable
-          cp build.sh termux-packages/packages/proot-portable
+          cp build.sh termux-packages/packages/proot
 
       - name: Build proot-${{ matrix.target_arch }}
         working-directory: ./termux-packages
-        run: ./scripts/run-docker.sh ./build-package.sh -a ${{ matrix.target_arch }} -I proot-portable
+        run: ./scripts/run-docker.sh ./build-package.sh -a ${{ matrix.target_arch }} -I proot && tree -L 3
 
       - name: Upload proot-${{ matrix.target_arch }}
         uses: actions/upload-artifact@v1
         with:
           name: proot-${{ matrix.target_arch }}
-          path: termux-packages/proot
+          path: ./termux-packages/proot
 
-  pages:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # pages:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Make dirs
-        working-directory: public
-        run: mkdir x86_64 aarch64 armv7 x86
+  #     - name: Make dirs
+  #       working-directory: public
+  #       run: mkdir x86_64 aarch64 armv7 x86
 
-      - uses: actions/download-artifact@v1
-        with: { name: proot-x86_64, path: public/x86_64 }
+  #     - uses: actions/download-artifact@v1
+  #       with: { name: proot-x86_64, path: public/x86_64 }
 
-      - uses: actions/download-artifact@v1
-        with: { name: proot-aarch64, path: public/aarch64 }
+  #     - uses: actions/download-artifact@v1
+  #       with: { name: proot-aarch64, path: public/aarch64 }
 
-      - uses: actions/download-artifact@v1
-        with: { name: proot-arm, path: public/armv7 }
+  #     - uses: actions/download-artifact@v1
+  #       with: { name: proot-arm, path: public/armv7 }
 
-      - uses: actions/download-artifact@v1
-        with: { name: proot-i686, path: public/x86 }
+  #     - uses: actions/download-artifact@v1
+  #       with: { name: proot-i686, path: public/x86 }
 
-      - name: Deploy
-        uses: crazy-max/ghaction-github-pages@v1
-        with:
-          target_branch: gh-pages
-          build_dir: public
-        env:
-          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+  #     - name: Deploy
+  #       uses: crazy-max/ghaction-github-pages@v1
+  #       with:
+  #         target_branch: gh-pages
+  #         build_dir: public
+  #       env:
+  #         GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
