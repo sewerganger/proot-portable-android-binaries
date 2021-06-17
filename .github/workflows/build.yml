@@ -19,17 +19,16 @@ jobs:
       - name: Clone
         run: |
         git clone https://github.com/termux/termux-packages.git
-        git checkout  ab2a3b70f0
 
       - name: Add proot-portable package
         run: |
           sudo apt install tree -y
-          mkdir termux-packages/packages/proot-portable
-          cp build.sh termux-packages/packages/proot
+          # mkdir termux-packages/packages/proot-portable
+          # cp build.sh termux-packages/packages/proot
 
       - name: Build proot-${{ matrix.target_arch }}
         working-directory: ./termux-packages
-        run: ./scripts/run-docker.sh ./build-package.sh -a ${{ matrix.target_arch }} -I proot && tree -L 3
+        run: ./build-package.sh -a ${{ matrix.target_arch }} -I proot && tree -L 3
 
       - name: Upload proot-${{ matrix.target_arch }}
         uses: actions/upload-artifact@v1
