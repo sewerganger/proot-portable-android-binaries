@@ -18,7 +18,7 @@ jobs:
 
       - name: Clone
         run: |
-        git clone https://github.com/termux/termux-packages.git
+          git clone https://github.com/termux/termux-packages.git
 
       - name: Add proot-portable package
         run: |
